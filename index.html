@@ -41,13 +41,16 @@
 <ol>
 <li>Create a Stellar account at <a href="https://launch.stellar.org">https://launch.stellar.org</a>, if you haven't already.</li>
 <li>Trust the Stellarjob bot to issue you [amount] <code>+++</code>. You can do this by entering your username and password in the box below (the credentials are never sent outside of your browser), or by making a <code>curl</code> request as shown below.</li>
-</ol><p></p><table>
+</ol>
+
+<table>
 <tr>
 <td> Username </td> <td> <input type="text" /> </td>
 </tr>
 <tr>
 <td> Password </td> <td> <input type="password" /></td>
 </tr>
+
 <pre><code>$ curl -X POST https://test.stellar.org:9002  -d '
 {
     "method": "submit",
