@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Stellarjob : Bot for giving public shoutouts to people for doing good things">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Stellarjob</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/gdb/stellarjob">View on GitHub</a>
+
+          <h1 id="project_title">Stellarjob</h1>
+          <h2 id="project_tagline">Bot for giving public shoutouts to people for doing good things</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/gdb/stellarjob/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/gdb/stellarjob/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h3>
+<a name="stellarjob" class="anchor" href="#stellarjob"><span class="octicon octicon-link"></span></a>Stellarjob</h3>
+
+<p>You're probably seeing this page because someone <code>+++</code>'d you via the Stellarjob bot. This means that the sender thinks you did something great, and wants to tell the world about it.</p>
+
+<p>To accept your <code>+++</code>, you need to do the following:</p>
+
+<ol>
+<li>Create a Stellar account at <a href="https://launch.stellar.org">https://launch.stellar.org</a>, if you haven't already.</li>
+<li>Trust the Stellarjob bot to issue you [amount] <code>+++</code>. You can do this by entering your username and password in the box below (the credentials are never sent outside of your browser), or by making a <code>curl</code> request as shown below.</li>
+</ol><p></p><table>
+<tr>
+<td> Username </td> <td> </td>
+</tr>
+<tr>
+<td> Username </td> <td> </td>
+</tr>
+<pre><code>$ curl -X POST https://test.stellar.org:9002  -d '
+{
+    "method": "submit",
+    "params": [
+        {
+            "secret": "&lt;USER_SECRET&gt;",
+            "tx_json": {
+                "Account": "&lt;USER_ACCOUNT&gt;",
+                "LimitAmount": {
+                    "currency": "USD",
+                    "issuer": "&lt;GATEWAY_ACCOUNT&gt;",
+                    "value": 30
+                },
+                "TransactionType": "TrustSet"
+            }
+        }
+    ]
+}
+'
+</code></pre>
+</table>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Stellarjob maintained by <a href="https://github.com/gdb">gdb</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-26652609-2");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+
+  </body>
+</html>
