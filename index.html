@@ -70,6 +70,22 @@ if (amount.match(/^\d+$/)) {
 <p> Run the following <code>curl</code> command, substituing in your
 secret and account. For convience, you can optionally paste your values into the provided text inputs. </p>
 
+<div id="show_me">
+<p> (<a href="#" onclick="document.getElementById('instructions').style.display = 'block';document.getElementById('show_me').style.display = 'none';return false;">Show me</a> where to find my account and secret.) </p>
+</div>
+
+<div style="display:none" id="instructions">
+<p> You can find your <span style="font-weight:bold">address</span> in your account by going to "Recieve"
+and the clicking "Show your Stellar Address": </p>
+
+<img src="./images/address.jpg" />
+
+<p> You can find your <span style="font-weight:bold">secret</span> by clicking your username to access the
+settings page. Click "Reveal" to show your secret: </p>
+
+<img src="./images/secret.jpg" />
+</div>
+
 <p> <label for="account_id">Account ID (not username):</label> <input type="text" id="account_id" onkeyup="document.getElementById('curl_account').innerText = this.value" /> </p>
 <p> <label for="password">Secret (not password):</label> <input type="text" id="secret" onkeyup="document.getElementById('curl_secret').innerText = this.value" /> </p>
 
