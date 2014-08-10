@@ -30,7 +30,6 @@ class Stellarjob::Runner
   end
 
   def stream_all
-    return
     tries = 1
 
     begin
