@@ -16,13 +16,13 @@ function getHash() {
   return hash.substring(1); // remove #
 }
 
-var displayAmount = null;
+var displayAmount;
 var amount = getHash();
 
-if (amount.match(/^\d+$/) {
+if (amount.match(/^\d+$/)) {
   displayAmount = amount;
 } else {
-  displayAmount = "[placeholder; load link directly from Twitter]"
+  displayAmount = "[placeholder; load link directly from Twitter]";
 }
     </script>
 
