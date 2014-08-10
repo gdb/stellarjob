@@ -60,16 +60,19 @@ if (amount.match(/^\d+$/)) {
 <h4> Setting trust manually </h4>
 
 <p> Run the following <code>curl</code> command, substituing in your
-secret and account: </p>
+secret and account. For convience, you can optionally paste your values into the provided text inputs. </p>
+
+<p> <label for="account_id">Account ID (not username):</label> <input type="text" id="account_id" onkeyup="document.getElementById('curl_account').innerText = this.value" /> </p>
+<p> <label for="password">Secret (not password):</label> <input type="text" id="secret" onkeyup="document.getElementById('curl_secret').innerText = this.value" /> </p>
 
 <pre><code>$ curl -X POST https://live.stellar.org:9002  -d '
 {
     "method": "submit",
     "params": [
         {
-            "secret": "&lt;USER_SECRET&gt;",
+            "secret": "<span id='curl_secret'>&lt;USER_SECRET&gt;</span>",
             "tx_json": {
-                "Account": "&lt;USER_ACCOUNT&gt;",
+                "Account": "<span id='curl_account'>&lt;USER_ACCOUNT&gt;</span>",
                 "LimitAmount": {
                     "currency": "+++",
                     "issuer": "gfqoKMeMX6fYzB3xHfs8Le751eQ52YzSkb",
