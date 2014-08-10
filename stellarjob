@@ -1,0 +1,61 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'chatterbot'
+require 'stellarjob'
+
+class Stellarjob::Runner
+  def run
+    while true
+      Stellarjob::Twitter.bot.replies do |tweet|
+        interpret(tweet)
+      end
+
+      Stellarjob::Twitter.bot.update_config
+
+      process_lines()
+
+      puts "Sleep for 10s..."
+      sleep 10
+    end
+  end
+
+  def interpret(tweet)
+    text = tweet.text
+    sender = tweet.user.username
+
+    # @stellarjob: +++@thegdb for being awesome
+    if text =~ /\+\+\s*@(\w+)\s*(.*)\z/
+      recipient = $1
+      reason = $2
+      Stellarjob::GivePoint.handle(tweet, sender, recipient, reason)
+    else
+      puts "Could not parse tweet: #{text}"
+    end
+  end
+
+  def process_lines
+    raw = Stellarjob::Stellar.account_lines(Stellarjob::Stellar.stellarjob_account_id)
+    lines = raw['result']['lines']
+
+    puts "Processing #{lines.length} trust lines"
+
+    lines.each do |line|
+      next unless line['currency'] == '+++'
+
+      begin
+        limit = Integer(line['limit_peer'], 10)
+      rescue ArgumentError => e
+        puts "Could not parse integer from line #{line.inspect}: #{e}"
+        next
+      end
+
+      next unless link_attempt = Stellarjob::Model::LinkAttempt.first(link_amount: limit, active: true)
+
+      link_attempt.fulfill!(line['account'])
+    end
+  end
+end
+
+Stellarjob.init
+Stellarjob::Runner.new.run
