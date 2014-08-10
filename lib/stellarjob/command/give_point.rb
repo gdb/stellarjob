@@ -11,10 +11,6 @@ class Stellarjob::Command::GivePoint
     @reason = reason
   end
 
-  def bot
-    Stellarjob::Twitter.bot
-  end
-
   def run
     puts "Processing +++ from #{@sender} -> #{@recipient}"
 
@@ -23,7 +19,7 @@ class Stellarjob::Command::GivePoint
       return
     end
 
-    bot.favorite(@tweet)
+    Stellarjob::Twitter.bot.favorite(@tweet)
     if user = Stellarjob::Model::User.first(twitter_username: @recipient)
       handle_existing_user(user)
     elsif link_attempt = Stellarjob::Model::LinkAttempt.first(
