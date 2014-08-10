@@ -39,7 +39,7 @@ class Stellarjob::Model::LinkAttempt
       display = account
     end
 
-    tweet = Stellarjob::Twitter.tweet_reliably("@#{twitter_username}: Is your Stellar account #{display}? Reply 'yes' or ignore.", in_reply_to_tweet_id: parent_tweet_id)
+    tweet = Stellarjob::Twitter.tweet_reliably("@#{twitter_username}: Is your Stellar account #{display}? Reply 'yes' or ignore.")
 
     Stellarjob::Model::LinkAttemptTweet.create(
       twitter_username: twitter_username,

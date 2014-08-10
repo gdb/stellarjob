@@ -10,13 +10,16 @@ module Stellarjob::Twitter
 
     while true
       begin
-        return bot.client.update(msg, opts)
+        tweet = bot.client.update(msg, opts)
       rescue Twitter::Error::Forbidden => e
         pause = 2 ** tries * 10
         tries += 1
 
         puts "Tweeting failed; going to sleep for #{pause} seconds"
         sleep(tries)
+      else
+        puts "Successfully tweeted: #{tweet.id}"
+        return tweet
       end
     end
   end
