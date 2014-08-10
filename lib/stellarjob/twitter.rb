@@ -6,7 +6,7 @@ module Stellarjob::Twitter
   def self.tweet_reliably(*args)
     tries = 0
     while true
-      tweet = bot.tweet(*args)
+      tweet = Stellarjob::Twitter.tweet_reliably(*args)
       return tweet if tweet
 
       pause = 2 ** tries * 10
