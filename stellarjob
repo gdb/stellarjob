@@ -13,19 +13,24 @@ class Stellarjob::Runner
   def catchup_backlog_all
     tries = 1
 
-    begin
-      catchup_backlog
-    rescue Twitter::Error::TooManyRequests => e
-      minutes = 2 ** (tries - 1)
-      puts "Searching rate-limited; sleeping for #{minutes} minutes"
-      sleep(minutes * 60)
-      tries += 1
+    while true
+      begin
+        catchup_backlog
+      rescue Twitter::Error::TooManyRequests => e
+        minutes = 2 ** (tries - 1)
+        puts "Searching rate-limited; sleeping for #{minutes} minutes"
+        sleep(minutes * 60)
+        tries += 1
 
-      retry
+        retry
+      end
+
+      sleep(10)
     end
   end
 
   def stream_all
+    return
     tries = 1
 
     begin
@@ -106,7 +111,6 @@ class Stellarjob::Runner
     end
 
     bot.update_config
-    sleep(10)
   end
 
   def interpret(tweet)
@@ -137,7 +141,7 @@ class Stellarjob::Runner
   end
 
   def process_each_line(lines)
-    lines.each do |line|
+    account_limits = lines.map do |line|
       next unless line['currency'] == '+++'
       begin
         limit = Integer(line['limit_peer'], 10)
@@ -147,15 +151,28 @@ class Stellarjob::Runner
       end
       account = line['account']
 
+      [account, limit]
+    end
+    account_limits = Set.new(account_limits)
+
+    # Process any new entries
+    account_limits.each do |account, limit|
       next if Stellarjob::Model::Line.processed?(account, limit)
 
       if link_attempt = Stellarjob::Model::LinkAttempt.first(link_amount: limit, active: true)
         link_attempt.prepare(account)
       else
-        puts "Found a trust line without a corresponding active link attempt: #{line.inspect}"
+        puts "Found a trust line without a corresponding active link attempt: #{account} / #{limit}"
       end
 
       Stellarjob::Model::Line.processed!(account, limit)
+    end
+
+    # Clear missing cache entries
+    Stellarjob::Model::Line.each do |line|
+      next if account_limits.include?([line.account, line.amount])
+      puts "Deleting now-absent line: #{line}"
+      line.delete
     end
   end
 end

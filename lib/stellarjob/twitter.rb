@@ -3,17 +3,21 @@ module Stellarjob::Twitter
     @bot ||= create_bot
   end
 
-  def self.tweet_reliably(*args)
+  def self.tweet_reliably(msg, opts={})
     tries = 0
+
+    puts "About to tweet: #{msg.inspect} #{opts.inspect}"
+
     while true
-      tweet = Stellarjob::Twitter.tweet_reliably(*args)
-      return tweet if tweet
+      begin
+        return bot.client.update(msg, opts)
+      rescue Twitter::Error::Forbidden => e
+        pause = 2 ** tries * 10
+        tries += 1
 
-      pause = 2 ** tries * 10
-      tries += 1
-
-      puts "Tweeting failed; going to sleep for #{pause} seconds"
-      sleep(tries)
+        puts "Tweeting failed; going to sleep for #{pause} seconds"
+        sleep(tries)
+      end
     end
   end
 

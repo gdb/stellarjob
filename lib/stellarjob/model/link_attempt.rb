@@ -11,6 +11,7 @@ class Stellarjob::Model::LinkAttempt
   key :active, Boolean, default: true
   key :link_id, Integer
   key :pending_points, Integer, default: 1
+  key :parent_tweet_id, Integer
   # Need to set class name here
   # one :user
 
@@ -38,7 +39,7 @@ class Stellarjob::Model::LinkAttempt
       display = account
     end
 
-    tweet = Stellarjob::Twitter.tweet_reliably("@#{twitter_username}: Is your Stellar account #{display}? Reply 'yes' or ignore.")
+    tweet = Stellarjob::Twitter.tweet_reliably("@#{twitter_username}: Is your Stellar account #{display}? Reply 'yes' or ignore.", in_reply_to_tweet_id: parent_tweet_id)
 
     Stellarjob::Model::LinkAttemptTweet.create(
       twitter_username: twitter_username,
@@ -48,7 +49,7 @@ class Stellarjob::Model::LinkAttempt
       )
   end
 
-  def fulfill!(account, tweet_id)
+  def fulfill!(tweet_id, account)
     puts "Fulfilling #{self} with #{account}"
 
     begin
@@ -71,5 +72,9 @@ class Stellarjob::Model::LinkAttempt
 
     self.active = false
     self.save!
+  end
+
+  def link_attempt_tweets
+    Stellarjob::Model::LinkAttemptTweet.all(active: true, link_attempt: self._id)
   end
 end

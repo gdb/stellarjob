@@ -11,7 +11,7 @@ class Stellarjob::Model::Line
   # key :active, Boolean
 
   def to_s
-    "Line[#{_id}]<account=#{account.inspect}>"
+    "Line[#{_id}]<account=#{account.inspect} amount=#{amount.inspect}>"
   end
 
   def self.processed?(account, limit)

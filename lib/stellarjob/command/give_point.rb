@@ -47,14 +47,22 @@ class Stellarjob::Command::GivePoint
     link_attempt.save!
 
     Stellarjob::Twitter.tweet_reliably("@#{@recipient}: You've been +++'d by @#{@sender}. Congrats!", in_reply_to_status_id: @tweet.id)
-    Stellarjob::Twitter.tweet_reliably("@#{@recipient}: You have #{link_attempt.pending_points} +++ points pending. Link your Stellar account here: https://gdb.github.io/stellarjob/##{link_attempt.link_amount}.", in_reply_to_status_id: @tweet.id)
+
+    tweets = link_attempt.link_attempt_tweets
+    if tweets.length == 0
+      Stellarjob::Twitter.tweet_reliably("@#{@recipient}: You have #{link_attempt.pending_points} +++ points pending. Link your Stellar account here: https://gdb.github.io/stellarjob/##{link_attempt.link_amount}.", in_reply_to_status_id: @tweet.id)
+    else
+      # Already linked, just needs to confirm
+      Stellarjob::Twitter.tweet_reliably("@#{@recipient}: You have #{link_attempt.pending_points} +++ points pending. Please finish linking your account.", in_reply_to_status_id: @tweet.id)
+    end
   end
 
   def handle_new_link
     puts "Asking new user to sign up"
 
     link_attempt = Stellarjob::Model::LinkAttempt.generate(
-      twitter_username: @recipient
+      twitter_username: @recipient,
+      parent_tweet_id: @tweet.id
       )
 
     Stellarjob::Twitter.tweet_reliably("@#{@recipient}: You've been +++'d by @#{@sender}. Congrats!", in_reply_to_status_id: @tweet.id)
