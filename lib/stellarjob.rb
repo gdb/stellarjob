@@ -17,5 +17,6 @@ module Stellarjob
     Stellarjob::Model::LinkAttempt.ensure_index(:twitter_username, unique: true)
     Stellarjob::Model::Line.ensure_index([[:account, 1], [:amount, 1]], unique: true)
     Stellarjob::Model::Tweet.ensure_index(:tweet_id, unique: true)
+    Stellarjob::Model::LinkAttemptTweet.ensure_index(:tweet_id, unique: true)
   end
 end

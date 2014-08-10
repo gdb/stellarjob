@@ -66,7 +66,8 @@ class Stellarjob::Runner
 
   def handle_tweet(tweet, source)
     puts "Received tweet via #{source}"
-    if tweet.user.username == Stellarjob::Config.config[:twitter_username]
+    if tweet.user.username == Stellarjob::Config.config[:twitter_username] &&
+        !tweet.text.start_with?('@stellarjob -f ')
       puts "Skipping my own tweet: #{tweet.text} (#{tweet.id})"
       return
     end
@@ -116,7 +117,9 @@ class Stellarjob::Runner
     if text =~ /\+\+\s*@(\w+)\s*(.*)\z/
       recipient = $1
       reason = $2
-      Stellarjob::GivePoint.handle(tweet, sender, recipient, reason)
+      Stellarjob::Command::GivePoint.handle(tweet, sender, recipient, reason)
+    elsif text =~ /yes/i && tweet.in_reply_to_tweet_id
+      Stellarjob::Command::LinkAttemptReply.handle(tweet, sender, tweet.in_reply_to_tweet_id)
     else
       puts "Could not parse tweet: #{text}"
     end
@@ -147,7 +150,7 @@ class Stellarjob::Runner
       next if Stellarjob::Model::Line.processed?(account, limit)
 
       if link_attempt = Stellarjob::Model::LinkAttempt.first(link_amount: limit, active: true)
-        link_attempt.fulfill!(account)
+        link_attempt.prepare(account)
       else
         puts "Found a trust line without a corresponding active link attempt: #{line.inspect}"
       end

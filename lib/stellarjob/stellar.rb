@@ -1,3 +1,4 @@
+require 'cgi'
 require 'rest_client'
 
 module Stellarjob::Stellar
@@ -7,6 +8,18 @@ module Stellarjob::Stellar
 
   def self.stellarjob_secret
     Stellarjob::Config.config.fetch(:stellar_secret)
+  end
+
+  def self.account_to_username(account)
+    begin
+      response = RestClient.get("https://api.stellar.org/reverseFederation?domain=stellar.org&type=reverse_federation&destination_address=#{CGI.escape(account)}")
+    rescue RestClient::ResourceNotFound
+      puts "No username found for #{account}"
+    else
+      JSON.parse(response).
+        fetch('federation_json').
+        fetch('destination')
+    end
   end
 
   def self.send_points(destination, value)

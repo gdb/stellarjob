@@ -1,7 +1,7 @@
-class Stellarjob::GivePoint
+class Stellarjob::Command::GivePoint
   def self.handle(*args)
-    plus_plus = self.new(*args)
-    plus_plus.run
+    gp = self.new(*args)
+    gp.run
   end
 
   def initialize(tweet, sender, recipient, reason)
@@ -23,6 +23,7 @@ class Stellarjob::GivePoint
       return
     end
 
+    bot.favorite(@tweet)
     if user = Stellarjob::Model::User.first(twitter_username: @recipient)
       handle_existing_user(user)
     elsif link_attempt = Stellarjob::Model::LinkAttempt.first(
@@ -33,8 +34,6 @@ class Stellarjob::GivePoint
     else
       handle_new_link
     end
-
-    bot.favorite(@tweet)
   end
 
   def handle_existing_user(user)

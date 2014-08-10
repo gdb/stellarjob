@@ -29,7 +29,26 @@ class Stellarjob::Model::LinkAttempt
       )
   end
 
-  def fulfill!(account)
+  def prepare(account)
+    puts "Found appropriate trustline, so preparing to link #{self} with #{account}"
+   
+    if stellar_username = Stellarjob::Stellar.account_to_username(account)
+      display = "#{stellar_username} (#{account})"
+    else
+      display = account
+    end
+
+    tweet = Stellarjob::Twitter.tweet_reliably("@#{twitter_username}: Is your Stellar account #{display}? Reply 'yes' or ignore.")
+
+    Stellarjob::Model::LinkAttemptTweet.create(
+      twitter_username: twitter_username,
+      link_attempt: self._id,
+      stellar_account: account,
+      tweet_id: tweet.id
+      )
+  end
+
+  def fulfill!(account, tweet_id)
     puts "Fulfilling #{self} with #{account}"
 
     begin
@@ -47,7 +66,8 @@ class Stellarjob::Model::LinkAttempt
 
     user.send_points!(pending_points)
 
-    Stellarjob::Twitter.bot.tweet("@#{twitter_username}: Sent you #{pending_points} +++: https://www.stellar.org/viewer/#live/#{account}")
+    puts "Tweeting about the fulfillment"
+    Stellarjob::Twitter.tweet_reliably("@#{twitter_username}: Sent you #{pending_points} +++: https://www.stellar.org/viewer/#live/#{account}", in_reply_to_tweet_id: tweet_id)
 
     self.active = false
     self.save!
