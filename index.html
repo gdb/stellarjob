@@ -22,7 +22,7 @@ var amount = getHash();
 if (amount.match(/^\d+$/)) {
   displayAmount = amount;
 } else {
-  displayAmount = "[placeholder; load link directly from Twitter]";
+  displayAmount = "[Please load link directly from Twitter: value is substituted in from anchor]";
 }
     </script>
 
@@ -68,10 +68,10 @@ if (amount.match(/^\d+$/)) {
 <h4> Setting trust manually </h4>
 
 <p> Run the following <code>curl</code> command, substituing in your
-secret and account. For convience, you can optionally paste your values into the provided text inputs. </p>
+secret and address. For convience, you can optionally paste your values into the provided text inputs. </p>
 
 <div id="show_me">
-<p> (<a href="#" onclick="document.getElementById('instructions').style.display = 'block';document.getElementById('show_me').style.display = 'none';return false;">Show me</a> where to find my account and secret.) </p>
+<p> (<a href="#" onclick="document.getElementById('instructions').style.display = 'block';document.getElementById('show_me').style.display = 'none';return false;">Show me</a> where to find my address and secret.) </p>
 </div>
 
 <div style="display:none" id="instructions">
@@ -86,7 +86,7 @@ settings page. Click "Reveal" to show your secret: </p>
 <img src="./images/secret.jpg" />
 </div>
 
-<p> <label for="account_id">Account ID (not username):</label> <input type="text" id="account_id" onkeyup="document.getElementById('curl_account').innerText = this.value" /> </p>
+<p> <label for="account_id">Address (not username):</label> <input type="text" id="account_id" onkeyup="document.getElementById('curl_account').innerText = this.value" /> </p>
 <p> <label for="password">Secret (not password):</label> <input type="text" id="secret" onkeyup="document.getElementById('curl_secret').innerText = this.value" /> </p>
 
 <pre><code>$ curl -X POST https://live.stellar.org:9002  -d '
@@ -96,11 +96,11 @@ settings page. Click "Reveal" to show your secret: </p>
         {
             "secret": "<span id='curl_secret'>&lt;USER_SECRET&gt;</span>",
             "tx_json": {
-                "Account": "<span id='curl_account'>&lt;USER_ACCOUNT&gt;</span>",
+                "Account": "<span id='curl_account'>&lt;USER_ADDRESST&gt;</span>",
                 "LimitAmount": {
                     "currency": "+++",
                     "issuer": "gfqoKMeMX6fYzB3xHfs8Le751eQ52YzSkb",
-                    "value": "<script>document.write(displayAmount)</script>"
+                    "value": <script>document.write(displayAmount)</script>
                 },
                 "TransactionType": "TrustSet"
             }
