@@ -4,11 +4,28 @@
   <head>
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="description" content="Stellarjob : Bot for giving public shoutouts to people for doing good things">
+    <meta name="description" content="Stellarjob : Bot for giving public points to people for doing good things">
 
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
     <title>Stellarjob</title>
+
+    <script>
+function getHash() {
+  var hash = window.location.hash;
+  return hash.substring(1); // remove #
+}
+
+var displayAmount = null;
+var amount = getHash();
+
+if (amount.match(/^\d+$/) {
+  displayAmount = amount;
+} else {
+  displayAmount = "[placeholder; load link directly from Twitter]"
+}
+    </script>
+
   </head>
 
   <body>
@@ -19,12 +36,7 @@
           <a id="forkme_banner" href="https://github.com/gdb/stellarjob">View on GitHub</a>
 
           <h1 id="project_title">Stellarjob</h1>
-          <h2 id="project_tagline">Bot for giving public shoutouts to people for doing good things</h2>
-
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/gdb/stellarjob/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/gdb/stellarjob/tarball/master">Download this project as a tar.gz file</a>
-            </section>
+          <h2 id="project_tagline">Bot for giving public points to people for doing good things</h2>
         </header>
     </div>
 
@@ -34,24 +46,23 @@
         <h3>
 <a name="stellarjob" class="anchor" href="#stellarjob"><span class="octicon octicon-link"></span></a>Stellarjob</h3>
 
-<p>You're probably seeing this page because someone <code>+++</code>'d you via the Stellarjob bot. This means that the sender thinks you did something great, and wants to tell the world about it.</p>
+<p>You're probably seeing this page because someone <code>+++</code>'d you via the <a href="https://twitter.com/stellarjob">Stellarjob</a> Twitter bot. This means that the sender thinks you did something great and wants to send you a <code>+++</code> point.</p>
 
-<p>To accept your <code>+++</code>, you need to do the following:</p>
+<p>To accept your <code>+++</code> point, do the following:</p>
 
 <ol>
 <li>Create a Stellar account at <a href="https://launch.stellar.org">https://launch.stellar.org</a>, if you haven't already.</li>
-<li>Trust the Stellarjob bot to issue you [amount] <code>+++</code>. You can do this by entering your username and password in the box below (the credentials are never sent outside of your browser), or by making a <code>curl</code> request as shown below.</li>
+<li>Trust the Stellarjob bot to issue you <code>+++</code>. You can do this by entering your username and password on this page (the credentials are never sent from you browser), or by making a <code>curl</code> request as shown below.</li>
 </ol>
 
-<table>
-<tr>
-<td> Username </td> <td> <input type="text" /> </td>
-</tr>
-<tr>
-<td> Password </td> <td> <input type="password" /></td>
-</tr>
+<p> Note this project is largely a proof-of-concept. It should largely work, but please forgive any bugs or features that need fleshing out. (<a href="mailto:gdb@stripe.com">Feedback</a> welcome!) </p>
 
-<pre><code>$ curl -X POST https://test.stellar.org:9002  -d '
+<h4> Setting trust manually </h4>
+
+<p> Run the following <code>curl</code> command, substituing in your
+secret and account: </p>
+
+<pre><code>$ curl -X POST https://live.stellar.org:9002  -d '
 {
     "method": "submit",
     "params": [
@@ -60,9 +71,9 @@
             "tx_json": {
                 "Account": "&lt;USER_ACCOUNT&gt;",
                 "LimitAmount": {
-                    "currency": "USD",
-                    "issuer": "&lt;GATEWAY_ACCOUNT&gt;",
-                    "value": 30
+                    "currency": "+++",
+                    "issuer": "gfqoKMeMX6fYzB3xHfs8Le751eQ52YzSkb",
+                    "value": "<script>document.write(displayAmount)</script>"
                 },
                 "TransactionType": "TrustSet"
             }
@@ -71,7 +82,22 @@
 }
 '
 </code></pre>
-</table>
+
+<p> As an aside: you need to trust the Stellarjob bot for exactly the amount shown. This allows the bot to correlate your Stellar account with your Twitter handle. </p>
+
+<p> In theory, a malicious user could link instead of you to intercept your <code>+++</code> points. However, given <code>+++</code> points have no actual value, I'm not too concerned about locking down this case yet. If it happens in practice, I'll probably implement a Twitter-based override (if not always finish the linking process via Twitter) &mdash; just let <a href="mailto:gdb@stripe.com">me</a> know if you run into issues. </p>
+
+<h4> Setting trust automatically </h4>
+
+<p> (This part is just a mockup; it doesn't actually work yet.) </p>
+
+<p> Note: your password is just used locally for cryptographic operations and <span style="font-weight: bold">will not leave your browser</span>. </p>
+
+<form action="/dev/null" onsubmit="alert('Not yet implemented!');return false">
+<p> <label for="username">Stellar username:</label> <input type="text" id="username" /> </p>
+<p> <label for="password">Stellar password:</label> <input type="password" id="password" /> </p>
+<p> <input type="submit" value="Trust Stellarbot for +++" />
+</form>
       </section>
     </div>
 
