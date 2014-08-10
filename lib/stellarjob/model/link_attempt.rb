@@ -47,7 +47,7 @@ class Stellarjob::Model::LinkAttempt
 
     user.send_points!(pending_points)
 
-    Stellarjob::Twitter.bot.tweet("@#{twitter_username}: Sent you #{pending_points} +++: https://www.stellar.org/viewer/##{account}")
+    Stellarjob::Twitter.bot.tweet("@#{twitter_username}: Sent you #{pending_points} +++: https://www.stellar.org/viewer/#live/#{account}")
 
     self.active = false
     self.save!

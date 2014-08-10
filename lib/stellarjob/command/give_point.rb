@@ -19,7 +19,7 @@ class Stellarjob::GivePoint
     puts "Processing +++ from #{@sender} -> #{@recipient}"
 
     if @sender == @recipient
-      bot.tweet("@#{@sender}: You can't +++ yourself!")
+      bot.tweet("@#{@sender}: You can't +++ yourself!", in_reply_to_status_id: @tweet.id)
       return
     end
 
@@ -41,7 +41,7 @@ class Stellarjob::GivePoint
     puts "Going to send 1 +++ to existing user #{user}"
 
     user.send_points!(1)
-    bot.tweet("@#{@recipient}: You've been +++'d by @#{@sender}; your total is #{user.total_from_network}. Congrats!")
+    bot.tweet("@#{@recipient}: You've been +++'d by @#{@sender} for a total of #{user.total_from_network}: https://www.stellar.org/viewer/#live/#{user.stellar_account}", in_reply_to_status_id: @tweet.id)
   end
 
   def handle_pending_link(link_attempt)
@@ -51,8 +51,8 @@ class Stellarjob::GivePoint
     link_attempt.pending_points += 1
     link_attempt.save!
 
-    bot.tweet("@#{@recipient}: You've been +++'d by @#{@sender}. Congrats!")
-    bot.tweet("@#{@recipient}: You have #{link_attempt.pending_points} +++ points pending. Link your Stellar account here: https://gdb.github.io/stellarjob/##{link_attempt.link_amount}.")
+    bot.tweet("@#{@recipient}: You've been +++'d by @#{@sender}. Congrats!", in_reply_to_status_id: @tweet.id)
+    bot.tweet("@#{@recipient}: You have #{link_attempt.pending_points} +++ points pending. Link your Stellar account here: https://gdb.github.io/stellarjob/##{link_attempt.link_amount}.", in_reply_to_status_id: @tweet.id)
   end
 
   def handle_new_link
@@ -62,7 +62,7 @@ class Stellarjob::GivePoint
       twitter_username: @recipient
       )
 
-    bot.tweet("@#{@recipient}: You've been +++'d by @#{@sender}. Congrats!")
-    bot.tweet("@#{@recipient}: Receive your +++ points by linking your Stellar account here: https://gdb.github.io/stellarjob/##{link_attempt.link_amount}.")
+    bot.tweet("@#{@recipient}: You've been +++'d by @#{@sender}. Congrats!", in_reply_to_status_id: @tweet.id)
+    bot.tweet("@#{@recipient}: Receive your +++ points by linking your Stellar account here: https://gdb.github.io/stellarjob/##{link_attempt.link_amount}.", in_reply_to_status_id: @tweet.id)
   end
 end

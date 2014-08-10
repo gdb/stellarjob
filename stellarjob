@@ -3,21 +3,109 @@
 require 'rubygems'
 require 'chatterbot'
 require 'stellarjob'
+require 'thread'
 
 class Stellarjob::Runner
-  def run
+  def initialize
+    @work_semaphore = Mutex.new
+  end
+
+  def catchup_backlog_all
+    tries = 1
+
+    begin
+      catchup_backlog
+    rescue Twitter::Error::TooManyRequests => e
+      minutes = 2 ** (tries - 1)
+      puts "Searching rate-limited; sleeping for #{minutes} minutes"
+      sleep(minutes * 60)
+      tries += 1
+
+      retry
+    end
+  end
+
+  def stream_all
+    tries = 1
+
+    begin
+      stream
+    rescue JSON::ParserError => e
+      raise unless e.to_s =~ /Exceeded connection limit/
+
+      minutes = 2 ** tries
+      puts "Streaming rate-limited; sleeping for #{minutes} minutes"
+      sleep(minutes * 60)
+      tries += 1
+      retry
+    end
+  end
+
+  def process_all_lines
     while true
-      Stellarjob::Twitter.bot.replies do |tweet|
-        interpret(tweet)
+      process_lines
+      sleep 5
+    end
+  end
+
+  def bot
+    Stellarjob::Twitter.bot
+  end
+
+  def run
+    Thread.abort_on_exception = true
+
+    t1 = Thread.new {stream_all}
+    t2 = Thread.new {catchup_backlog}
+    t3 = Thread.new {process_all_lines}
+
+    t1.join
+    t2.join
+    t3.join
+  end
+
+  def handle_tweet(tweet, source)
+    puts "Received tweet via #{source}"
+    if tweet.user.username == Stellarjob::Config.config[:twitter_username]
+      puts "Skipping my own tweet: #{tweet.text} (#{tweet.id})"
+      return
+    end
+
+    @work_semaphore.synchronize do
+      begin
+        Stellarjob::Model::Tweet.create(
+          tweet_id: tweet.id,
+          text: tweet.text,
+          sender: tweet.user.username
+          )
+      rescue Mongo::OperationFailure => e
+        raise unless e.error_code == 11000
+        puts "Skipping duplicate tweet from #{tweet.user.username} (#{tweet.id})"
+        return
       end
 
-      Stellarjob::Twitter.bot.update_config
-
-      process_lines()
-
-      puts "Sleep for 10s..."
-      sleep 10
+      interpret(tweet)
     end
+  end
+
+  def stream
+    bot.streaming_client.user(stall_warnings: 'false') do |event|
+      case event
+      when Twitter::Tweet
+        handle_tweet(event, 'streaming')
+      else
+        puts "Received other event: #{event}"
+      end
+    end
+  end
+
+  def catchup_backlog
+    bot.replies do |tweet|
+      handle_tweet(tweet, 'search')
+    end
+
+    bot.update_config
+    sleep(10)
   end
 
   def interpret(tweet)
@@ -38,21 +126,33 @@ class Stellarjob::Runner
     raw = Stellarjob::Stellar.account_lines(Stellarjob::Stellar.stellarjob_account_id)
     lines = raw['result']['lines']
 
-    puts "Processing #{lines.length} trust lines"
+    puts "Processing #{lines.length} total trust lines"
 
+    @work_semaphore.synchronize do
+      process_each_line(lines)
+    end
+  end
+
+  def process_each_line(lines)
     lines.each do |line|
       next unless line['currency'] == '+++'
-
       begin
         limit = Integer(line['limit_peer'], 10)
       rescue ArgumentError => e
         puts "Could not parse integer from line #{line.inspect}: #{e}"
         next
       end
+      account = line['account']
 
-      next unless link_attempt = Stellarjob::Model::LinkAttempt.first(link_amount: limit, active: true)
+      next if Stellarjob::Model::Line.processed?(account, limit)
 
-      link_attempt.fulfill!(line['account'])
+      if link_attempt = Stellarjob::Model::LinkAttempt.first(link_amount: limit, active: true)
+        link_attempt.fulfill!(account)
+      else
+        puts "Found a trust line without a corresponding active link attempt: #{line.inspect}"
+      end
+
+      Stellarjob::Model::Line.processed!(account, limit)
     end
   end
 end
