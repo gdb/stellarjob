@@ -26,6 +26,12 @@ if (amount.match(/^\d+$/)) {
 }
     </script>
 
+    <style>
+      .prompt:after {
+        content: '$ '
+      }
+</style>
+
   </head>
 
   <body>
@@ -89,7 +95,7 @@ settings page. Click "Reveal" to show your secret: </p>
 <p> <label for="account_id">Address (not username):</label> <input type="text" id="account_id" onkeyup="document.getElementById('curl_account').innerText = this.value" /> </p>
 <p> <label for="password">Secret (not password):</label> <input type="text" id="secret" onkeyup="document.getElementById('curl_secret').innerText = this.value" /> </p>
 
-<pre><code>$ curl -X POST https://live.stellar.org:9002  -d '
+<pre><code><span class="prompt"></span>curl -X POST https://live.stellar.org:9002  -d '
 {
     "method": "submit",
     "params": [
