@@ -98,7 +98,7 @@ class Stellarjob::Runner
       case event
       when Twitter::Tweet
         unless event.retweeted_status.nil?
-          puts "Retweeted tweet: #{event.text} (#{event.id}) #{event.retweeted_statu
+          puts "Retweeted tweet: #{event.text} (#{event.id}) #{event.retweeted_status}"
           next
         end
 
@@ -135,7 +135,9 @@ class Stellarjob::Runner
 
   def process_lines
     raw = Stellarjob::Stellar.account_lines(Stellarjob::Stellar.stellarjob_account_id)
-    lines = raw['result']['lines']
+    lines = raw.
+      fetch('result').
+      fetch('lines')
 
     puts "Processing #{lines.length} total trust lines"
 
