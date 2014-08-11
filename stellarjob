@@ -97,8 +97,8 @@ class Stellarjob::Runner
     bot.streaming_client.user(stall_warnings: 'false') do |event|
       case event
       when Twitter::Tweet
-        if event.retweeted_status
-          puts "Skipping retweeted tweet: #{event.text} (#{event.id})"
+        unless event.retweeted_status.nil?
+          puts "Retweeted tweet: #{event.text} (#{event.id}) #{event.retweeted_statu
           next
         end
 
