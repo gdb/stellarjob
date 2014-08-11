@@ -50,10 +50,10 @@ class Stellarjob::Command::GivePoint
 
     tweets = link_attempt.link_attempt_tweets
     if tweets.length == 0
-      Stellarjob::Twitter.tweet_reliably("@#{@recipient}: You have #{link_attempt.pending_points} +++ points pending. Link your Stellar account here: https://gdb.github.io/stellarjob/##{link_attempt.link_amount}.", in_reply_to_status_id: first.id)
+      Stellarjob::Twitter.tweet_reliably("@#{@recipient}: You have #{link_attempt.pending_points} pending +++. Link your Stellar account here: https://gdb.github.io/stellarjob/##{link_attempt.link_amount}.", in_reply_to_status_id: first.id)
     else
       # Already linked, just needs to confirm
-      Stellarjob::Twitter.tweet_reliably("@#{@recipient}: You have #{link_attempt.pending_points} +++ points pending. Please finish linking your account.", in_reply_to_status_id: first.id)
+      Stellarjob::Twitter.tweet_reliably("@#{@recipient}: You have #{link_attempt.pending_points} pending +++. Please finish linking your account.", in_reply_to_status_id: first.id)
     end
   end
 
@@ -66,6 +66,6 @@ class Stellarjob::Command::GivePoint
       )
 
     first = Stellarjob::Twitter.tweet_reliably("@#{@recipient}: You've been +++'d by @#{@sender}. Congrats!", in_reply_to_status_id: @tweet.id)
-    Stellarjob::Twitter.tweet_reliably("@#{@recipient}: Receive your +++ points by linking your Stellar account here: https://gdb.github.io/stellarjob/##{link_attempt.link_amount}.", in_reply_to_status_id: first.id)
+    Stellarjob::Twitter.tweet_reliably("@#{@recipient}: You can claim pending +++ by linking your Stellar account here: https://gdb.github.io/stellarjob/##{link_attempt.link_amount}.", in_reply_to_status_id: first.id)
   end
 end
