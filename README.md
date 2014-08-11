@@ -1,29 +1,15 @@
 # Stellarjob
 
-TODO: Write a gem description
+Bot for upvoting people's via Twitter. Usage is simple:
 
-## Installation
+```
+@stellarjob +++@thegdb cool bot!
+```
 
-Add this line to your application's Gemfile:
+See https://gdb.github.io/stellarjob/ for more details.
 
-    gem 'stellarjob'
+## Status
 
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install stellarjob
-
-## Usage
-
-TODO: Write usage instructions here
-
-## Contributing
-
-1. Fork it ( https://github.com/[my-github-username]/stellarjob/fork )
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create a new Pull Request
+This project is pretty alpha. It's largely a proof-of-concept / a
+demonstration of the kinds of things you can build on top of
+Stellar. Use it, have fun, extend it.
