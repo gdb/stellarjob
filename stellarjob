@@ -181,5 +181,8 @@ class Stellarjob::Runner
   end
 end
 
+$stdout.sync = true
+$stderr.sync = true
+
 Stellarjob.init
 Stellarjob::Runner.new.run
