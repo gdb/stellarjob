@@ -16,7 +16,7 @@ module Stellarjob::Twitter
         tries += 1
 
         puts "Tweeting failed; going to sleep for #{pause} seconds"
-        sleep(tries)
+        sleep(pause)
       else
         puts "Successfully tweeted: #{tweet.id}"
         return tweet
