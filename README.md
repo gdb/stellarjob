@@ -1,5 +1,7 @@
 # Stellarjob
 
+(Note: I've now taken down the bot, so tweeting won't work. You can of course run a similar bot yourself though.)
+
 Bot for upvoting people's via Twitter. Usage is simple:
 
 ```
